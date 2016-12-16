@@ -54,7 +54,7 @@ class Linear(Layer):
 
 class Sigmoid(Layer):
     """
-    fix the `_sigmoid` and `forward` methods.
+    You need to fix the `_sigmoid` and `forward` methods.
     """
     def __init__(self, layer):
         Layer.__init__(self, [layer])
@@ -70,18 +70,15 @@ class Sigmoid(Layer):
 
         """
         sigma = 1/(1 + np.exp(-1*x))
-
+        return sigma
 
 
     def forward(self):
         """
         Set the value of this layer to the result of the
         sigmoid function, `_sigmoid`.
-
-        Your code here!
         """
-        # This is a dummy value to prevent numpy errors
-        # if you test without changing this method.
+
         self.value = self._sigmoid(self.inbound_layers[0].value)
 
 
