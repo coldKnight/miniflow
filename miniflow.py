@@ -1,7 +1,7 @@
 """
-Modify Linear#forward so that it linearly transforms
-input matrices, weights matrices and a bias vector to
-an output.
+Fix the Sigmoid class so that it computes the sigmoid function
+on the forward pass!
+
 """
 
 import numpy as np
@@ -17,16 +17,11 @@ class Layer:
     def forward():
         raise NotImplementedError
 
+    def backward():
+        raise NotImplementedError
+
 
 class Input(Layer):
-    """
-    While it may be strange to consider an input a layer when
-    an input is only an individual node in a layer, for the sake
-    of simpler code we'll still use Layer as the base class.
-
-    Think of Input as collating many individual input nodes into
-    a Layer.
-    """
     def __init__(self):
         # An Input layer has no inbound layers,
         # so no need to pass anything to the Layer instantiator
@@ -36,6 +31,13 @@ class Input(Layer):
         # Do nothing because nothing is calculated.
         pass
 
+    def backward(self):
+        # An Input Layer has no inputs so we refer to ourself
+        # for the gradient
+        self.gradients = {self: 0}
+        for n in self.outbound_Layers:
+            self.gradients[self] += n.gradients[self]
+
 
 class Linear(Layer):
     def __init__(self, inbound_layer, weights, bias):
@@ -44,11 +46,43 @@ class Linear(Layer):
         Layer.__init__(self, [inbound_layer, weights, bias])
 
     def forward(self):
-        # new
         inputs = self.inbound_layers[0].value
         weights = self.inbound_layers[1].value
         bias = self.inbound_layers[2].value
         self.value = np.dot(inputs, weights) + bias
+
+
+class Sigmoid(Layer):
+    """
+    fix the `_sigmoid` and `forward` methods.
+    """
+    def __init__(self, layer):
+        Layer.__init__(self, [layer])
+
+    def _sigmoid(self, x):
+        """
+        This method is separate from `forward` because it
+        will be used with `backward` as well.
+
+        `x`: A numpy array-like object.
+
+        Return the result of the sigmoid function.
+
+        """
+        sigma = 1/(1 + np.exp(-1*x))
+
+
+
+    def forward(self):
+        """
+        Set the value of this layer to the result of the
+        sigmoid function, `_sigmoid`.
+
+        Your code here!
+        """
+        # This is a dummy value to prevent numpy errors
+        # if you test without changing this method.
+        self.value = self._sigmoid(self.inbound_layers[0].value)
 
 
 def topological_sort(feed_dict):
